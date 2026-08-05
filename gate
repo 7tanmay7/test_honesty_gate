@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""Test-honesty gate CLI entry point.
+
+Usage:
+    ./gate check [pr_id]
+
+Runs all 5 mutants against demo-repo, prints the contract JSON to stdout,
+and exits 0 (pass) or 1 (fail). All diagnostics go to stderr.
+"""
+
+import sys
+from pathlib import Path
+
+# Make backend/ importable regardless of the current working directory.
+BACKEND_DIR = Path(__file__).resolve().parent / "backend"
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
+
+from gate_service.gate import gate_check_cli  # noqa: E402
+
+if __name__ == "__main__":
+    sys.exit(gate_check_cli())
