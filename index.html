@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test-Honesty Gate — Guarantee Test Integrity Before Merge</title>
+  <meta name="description" content="Automated mutation testing gate with LLM-powered root cause explanations for surviving mutants. Stop dishonest unit tests before they break production.">
+  <link rel="stylesheet" href="/static/styles.css">
+  <!-- Fallback static link for direct file opening -->
+  <link rel="stylesheet" href="static/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=SF+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Ambient Animated Background Lights -->
+  <div class="ambient-background" aria-hidden="true">
+    <div class="ambient-orb ambient-orb-1"></div>
+    <div class="ambient-orb ambient-orb-2"></div>
+    <div class="ambient-orb ambient-orb-3"></div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <header class="navbar-wrapper">
+    <nav class="navbar glass-card" aria-label="Main Navigation">
+      <a href="#" class="nav-brand" id="nav-brand-logo">
+        <div class="brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <span>Test-Honesty Gate</span>
+        <span class="brand-badge">v0.1</span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#inspector" class="nav-link">Live Inspector</a></li>
+        <li><a href="#simulator" class="nav-link">Mutation Lab</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#cli-docs" class="nav-link">CLI & Docs</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <div class="status-indicator-pill" id="status-pill" title="Backend API Liveness">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Checking API...</span>
+        </div>
+
+        <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle dark and light theme" title="Toggle theme">
+          <span id="theme-icon">☀️</span>
+        </button>
+
+        <a href="#inspector" class="btn btn-primary btn-sm" id="cta-nav-btn">Run Scan</a>
+
+        <button class="mobile-menu-toggle" id="mobile-menu-btn" aria-label="Open mobile menu">
+          ☰
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Drawer Menu -->
+    <div class="mobile-drawer" id="mobile-drawer">
+      <a href="#inspector" class="nav-link">Live Inspector</a>
+      <a href="#simulator" class="nav-link">Mutation Lab</a>
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#cli-docs" class="nav-link">CLI & Docs</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="container">
+    <section class="hero-section">
+      <div class="hero-pill">
+        <span>🛡️ Apple-Grade CI Security</span>
+        <span>•</span>
+        <span>LLM-Powered Mutation Gate</span>
+      </div>
+
+      <h1 class="hero-title">
+        Eliminate Fake Tests.<br>
+        <span class="text-gradient">Guarantee Test Integrity.</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        Your unit tests pass, but do they actually catch bugs? Test-Honesty Gate injects synthetic mutations into your code to prove your test suite genuinely asserts behavior — blocking PR merges when artificial bugs survive.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#inspector" class="btn btn-primary" id="hero-btn-primary">
+          <span>Inspect PR Gate Check</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="#simulator" class="btn btn-secondary" id="hero-btn-secondary">
+          <span>Launch Mutation Lab</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- PR Gate Inspector Dashboard -->
+    <section id="inspector" class="inspector-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">PR Gate Inspector</h2>
+          <p class="section-desc">Real-time status breakdown for pull requests evaluated by the gate.</p>
+        </div>
+
+        <div class="inspector-toolbar">
+          <span id="pr-id-label" style="font-family: var(--font-mono); font-weight: 600; color: var(--color-text-secondary);">PR: pr-8429</span>
+
+          <div class="toggle-switch">
+            <span class="toggle-option active" id="mode-toggle-mock">Mock Data</span>
+            <span class="toggle-option" id="mode-toggle-live">Live API</span>
+          </div>
+
+          <button class="btn btn-secondary btn-sm" id="refresh-btn" title="Refresh contract state">
+            <span>🔄 Refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Key Metrics Cards -->
+      <div class="metrics-grid">
+        <div class="metric-card glass-card verdict-fail" id="verdict-card">
+          <div class="metric-label">
+            <span>Overall Gate Verdict</span>
+            <span style="font-size: 1.25rem;">⚖️</span>
+          </div>
+          <div style="margin: 0.5rem 0;">
+            <span class="verdict-badge fail" id="verdict-badge">
+              <span>✕</span> BLOCKED
+            </span>
+          </div>
+          <div class="metric-subtext" id="verdict-text">
+            3 mutant(s) survived your test suite.
+          </div>
+        </div>
+
+        <div class="metric-card glass-card metric-blue">
+          <div class="metric-label">
+            <span>Mutants Tested</span>
+            <span>🧬</span>
+          </div>
+          <div class="metric-value" id="metric-tested">5</div>
+          <div class="metric-subtext">Artificial code variations introduced</div>
+        </div>
+
+        <div class="metric-card glass-card metric-purple">
+          <div class="metric-label">
+            <span>Caught vs Survived</span>
+            <span>🎯</span>
+          </div>
+          <div class="metric-value">
+            <span style="color: var(--color-status-pass);" id="metric-caught">2</span>
+            <span style="color: var(--color-text-tertiary); font-size: 1.5rem;">/</span>
+            <span style="color: var(--color-status-fail);" id="metric-survived">3</span>
+          </div>
+          <div class="metric-subtext">Caught (Passed) / Survived (Blocked)</div>
+        </div>
+
+        <div class="metric-card glass-card">
+          <div class="metric-label">
+            <span>Gate Latency</span>
+            <span>⚡</span>
+          </div>
+          <div class="metric-value" id="metric-duration">1,830 ms</div>
+          <div class="metric-subtext">Sub-2s test execution & explanation</div>
+        </div>
+      </div>
+
+      <!-- Mutant Results Listing -->
+      <div class="glass-card results-container">
+        <div class="results-filter-bar">
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all" id="filter-all">All Mutants (5)</button>
+            <button class="filter-tab" data-filter="survived" id="filter-survived">Survived (3)</button>
+            <button class="filter-tab" data-filter="caught" id="filter-caught">Caught (2)</button>
+          </div>
+          <span style="font-size: 0.8125rem; color: var(--color-text-tertiary);">Showing detailed mutant locations & explanations</span>
+        </div>
+
+        <div class="mutant-list" id="mutant-list-container">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Mutation Lab Simulator -->
+    <section id="simulator" class="simulator-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Interactive Mutation Lab</h2>
+          <p class="section-desc">Watch how Test-Honesty Gate mutates python source code and catches silent test flaws.</p>
+        </div>
+        <button class="btn btn-primary" id="run-sim-btn">
+          <span>▶ Run Live Simulation</span>
+        </button>
+      </div>
+
+      <div class="simulator-grid">
+        <!-- Original Code Editor -->
+        <div class="code-editor-box">
+          <div class="editor-header">
+            <div class="mac-dots">
+              <span class="mac-dot mac-dot-red"></span>
+              <span class="mac-dot mac-dot-yellow"></span>
+              <span class="mac-dot mac-dot-green"></span>
+            </div>
+            <span class="editor-title">src/pricing.py (Original)</span>
+            <span style="font-size: 0.75rem; color: var(--color-status-pass);">Original Code</span>
+          </div>
+          <div class="code-content">
+            <div class="code-line"><span class="line-num">14</span><span class="kw">def</span> <span class="fn">calculate_discount</span>(cart_total, user):</div>
+            <div class="code-line"><span class="line-num">15</span>    <span class="kw">if</span> cart_total <span class="op">&gt;</span> <span class="num">100.0</span>:</div>
+            <div class="code-line"><span class="line-num">16</span>        <span class="kw">return</span> cart_total <span class="op">*</span> <span class="num">0.15</span></div>
+            <div class="code-line"><span class="line-num">27</span>    <span class="kw">if</span> discount_tier <span class="op">==</span> <span class="num">2</span>:</div>
+            <div class="code-line"><span class="line-num">28</span>        <span class="kw">return</span> cart_total <span class="op">*</span> <span class="num">0.20</span></div>
+            <div class="code-line"><span class="line-num">36</span>    <span class="kw">for</span> i <span class="kw">in</span> range(len(items)):</div>
+            <div class="code-line"><span class="line-num">37</span>        process_item(items[i])</div>
+          </div>
+        </div>
+
+        <!-- Mutated Code Editor -->
+        <div class="code-editor-box">
+          <div class="editor-header">
+            <div class="mac-dots">
+              <span class="mac-dot mac-dot-red"></span>
+              <span class="mac-dot mac-dot-yellow"></span>
+              <span class="mac-dot mac-dot-green"></span>
+            </div>
+            <span class="editor-title">Mutant Variant (equality_flip & boundary_shift)</span>
+            <span style="font-size: 0.75rem; color: var(--color-status-fail);">Surviving Mutation</span>
+          </div>
+          <div class="code-content">
+            <div class="code-line"><span class="line-num">14</span><span class="kw">def</span> <span class="fn">calculate_discount</span>(cart_total, user):</div>
+            <div class="code-line diff-del"><span class="line-num">15</span>-   if cart_total > 100.0:</div>
+            <div class="code-line diff-add"><span class="line-num">15</span>+   if cart_total >= 100.0: <span style="font-size: 0.75rem;">/* boundary_shift */</span></div>
+            <div class="code-line diff-del"><span class="line-num">27</span>-   if discount_tier == 2:</div>
+            <div class="code-line diff-add"><span class="line-num">27</span>+   if discount_tier != 2: <span style="font-size: 0.75rem;">/* equality_flip */</span></div>
+            <div class="code-line diff-del"><span class="line-num">36</span>-   for i in range(len(items)):</div>
+            <div class="code-line diff-add"><span class="line-num">36</span>+   for i in range(len(items) - 1): <span style="font-size: 0.75rem;">/* off_by_one */</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 1rem; text-align: center; color: var(--color-text-secondary); font-size: 0.9375rem;" id="sim-status">
+        Ready for simulation. Click "Run Live Simulation" to execute gate pipeline.
+      </div>
+    </section>
+
+    <!-- Key Features Grid -->
+    <section id="features" style="margin-bottom: 5rem;">
+      <div class="section-header" style="text-align: center; display: block; margin-bottom: 3rem;">
+        <h2 class="section-title">Built for Production Engineering Teams</h2>
+        <p class="section-desc">Designed with Apple-level simplicity, high performance, and total fail-closed safety.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card glass-card">
+          <div class="feature-icon">🛡️</div>
+          <h3 class="feature-title">Fail-Closed Security</h3>
+          <p class="feature-desc">Any surviving mutant automatically blocks PR merge. If tests don't catch the bug, the PR cannot pass.</p>
+        </div>
+
+        <div class="feature-card glass-card">
+          <div class="feature-icon">🤖</div>
+          <h3 class="feature-title">LLM Root Cause Explainer</h3>
+          <p class="feature-desc">Integrates Gemini / LLaMA to write human-readable explanations explaining exactly why your unit test missed the mutation.</p>
+        </div>
+
+        <div class="feature-card glass-card">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-title">Sub-2 Second Gate</h3>
+          <p class="feature-desc">Parallel mutation execution keeps CI builds snappy. Fast feedback directly in GitHub Actions step summaries.</p>
+        </div>
+
+        <div class="feature-card glass-card">
+          <div class="feature-icon">⚙️</div>
+          <h3 class="feature-title">Zero Third-Party Dependency</h3>
+          <p class="feature-desc">Robust fail-safe fallbacks ensure the gate never hangs or breaks if external APIs or network endpoints are offline.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLI & Terminal Section -->
+    <section id="cli-docs" style="margin-bottom: 5rem;">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Command Line Interface</h2>
+          <p class="section-desc">Run gate checks locally or integrate directly into your CI/CD pipeline.</p>
+        </div>
+      </div>
+
+      <div class="terminal-card">
+        <div class="terminal-header">
+          <div class="mac-dots">
+            <span class="mac-dot mac-dot-red"></span>
+            <span class="mac-dot mac-dot-yellow"></span>
+            <span class="mac-dot mac-dot-green"></span>
+          </div>
+          <span style="font-family: var(--font-mono); font-size: 0.8125rem; color: var(--color-text-secondary);">bash — ./gate check</span>
+          <button class="copy-btn" id="copy-cmd-btn">Copy</button>
+        </div>
+        <div class="terminal-body">
+          <div><span style="color: #6b7280;"># Run the Test-Honesty Gate check for a pull request</span></div>
+          <div>$ ./gate check pr-8429</div>
+          <br>
+          <div style="color: #e5e7eb;">## Test Honesty Gate - BLOCKED</div>
+          <div>- Mutants tested: 5</div>
+          <div>- Caught by your tests: 2</div>
+          <div>- Survived (not caught): 3</div>
+          <div>- Duration: 1830 ms</div>
+          <br>
+          <div style="color: #ff453a;">### Merge blocked - these mutations survived your tests</div>
+          <div>- <span style="color: #2997ff;">src/pricing.py:28</span> (<span style="color: #bf5af2;">equality_flip</span>): Flipped '==' to '!=' on discount condition...</div>
+          <div>- <span style="color: #2997ff;">src/pricing.py:15</span> (<span style="color: #bf5af2;">boundary_shift</span>): Shifted boundary condition '>' to '>='...</div>
+          <div>- <span style="color: #2997ff;">src/pricing.py:37</span> (<span style="color: #bf5af2;">off_by_one</span>): Off-by-one error: changed limit from len(items) to len(items)-1...</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Apple-Style Footer -->
+  <footer class="footer">
+    <div class="container">
+      <ul class="footer-links">
+        <li><a href="#inspector" class="footer-link">Live Inspector</a></li>
+        <li><a href="#simulator" class="footer-link">Mutation Lab</a></li>
+        <li><a href="/gate?mock=true" class="footer-link" target="_blank">Contract JSON API</a></li>
+        <li><a href="/health" class="footer-link" target="_blank">API Health Probe</a></li>
+      </ul>
+      <p>© 2026 Test-Honesty Gate Team. Designed for software excellence and maximum test integrity.</p>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+  <!-- Fallback static link for direct browser file opening -->
+  <script src="static/app.js"></script>
+</body>
+</html>

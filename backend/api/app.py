@@ -16,8 +16,11 @@ from __future__ import annotations
 import os
 from typing import Any
 
+from pathlib import Path
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from llm_explainer.mock_input import mock_contract
 from llm_explainer.service import explain_surviving_mutants
@@ -32,6 +35,22 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Root directory and Static Files setup
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+STATIC_DIR = ROOT_DIR / "static"
+
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+
+@app.get("/")
+def read_root():
+    """Serve the Apple-inspired Test-Honesty Gate Landing Page & Web App."""
+    index_path = ROOT_DIR / "index.html"
+    if index_path.exists():
+        return FileResponse(str(index_path))
+    return {"message": "Test-Honesty Gate API Active. Visit /gate for contract JSON."}
 
 
 def _mock_mode_enabled(mock_param: bool | None) -> bool:

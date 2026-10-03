@@ -1,0 +1,12 @@
+# demo-repo/ is a test FIXTURE, not application source.
+#
+# Its formatting is load-bearing. mutation_engine/runner.py targets exact
+# 1-based line numbers in demo-repo/src/pricing.py, and the drop_null_guard
+# operator deletes a single-line `if user is None: return "anonymous"` guard.
+# Letting `ruff format` split that guard across two lines would shift every
+# downstream line number AND turn the m5 mutation into an IndentationError,
+# which the runner would silently misread as "mutant caught".
+#
+# We therefore lint and format our own source, and leave the fixture alone
+# on purpose. frontend/ is covered by ESLint, not ruff.
+extend-exclude = ["demo-repo", "frontend"]
