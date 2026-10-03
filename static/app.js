@@ -110,6 +110,13 @@ function initEventListeners() {
     mobileBtn.addEventListener('click', () => {
       drawer.classList.toggle('active');
     });
+
+    const mobileLinks = drawer.querySelectorAll('.nav-link');
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        drawer.classList.remove('active');
+      });
+    });
   }
 
   // Mock / Live Mode Toggle
